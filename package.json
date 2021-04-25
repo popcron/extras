@@ -1,0 +1,7 @@
+{
+    "name": "com.popcron.extras",
+    "displayName": "Popcron Extras",
+    "version": "1.0.0",
+    "unity": "2018.3",
+    "description": "Some utility code and extras that I've amassed over the years that are handy to have."
+}
