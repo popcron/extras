@@ -34,6 +34,7 @@ public class Assembly
 
     private SystemAssembly assembly;
     private readonly string location;
+    private readonly Type[] types;
 
     private SystemAssembly SystemAssembly
     {
@@ -55,8 +56,16 @@ public class Assembly
         this.assembly = assembly;
         fullName = assembly.FullName;
         location = assembly.Location;
+
+        var systemTypes = assembly.GetTypes();
+        types = new Type[systemTypes.Length];
+        for (int i = 0; i < types.Length; i++)
+        {
+            types[i] = systemTypes[i];
+        }
     }
 
+    public Type[] GetTypes() => types;
     public override int GetHashCode() => SystemAssembly.GetHashCode();
 
     public override bool Equals(object other)

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Security;
 using UnityEngine;
-using SystemType = System.Type;
 using SystemAssembly = System.Reflection.Assembly;
+using SystemType = System.Type;
 
 [Serializable]
 public class Type
@@ -48,6 +49,7 @@ public class Type
     private readonly bool isEnum;
     private readonly bool isSealed;
     private readonly bool isAbstract;
+    private readonly TypeAttributes attributes;
     private readonly bool isClass;
     private readonly bool isInterface;
     private readonly bool isValueType;
@@ -84,6 +86,7 @@ public class Type
     public bool IsInterface => isInterface;
     public bool IsValueType => isValueType;
     public bool IsAbstract => isAbstract;
+    public TypeAttributes Attributes => attributes;
     public Type UnderlyingSystemType => GetType(underlyingSystemTypeFullName);
 
     protected Type(SystemType type)
@@ -107,11 +110,14 @@ public class Type
         isInterface = type.IsInterface;
         isValueType = type.IsValueType;
         isAbstract = type.IsAbstract;
+        attributes = type.Attributes;
         underlyingSystemTypeFullName = type.UnderlyingSystemType?.FullName;
     }
 
     public override string ToString() => SystemType.ToString();
     public override int GetHashCode() => SystemType.GetHashCode();
+    public IEnumerable<Attribute> GetCustomAttributes() => SystemType.GetCustomAttributes();
+    public object[] GetCustomAttributes(Type attributeType, bool inherit) => SystemType.GetCustomAttributes(attributeType, inherit);
 
     public override bool Equals(object other)
     {
@@ -202,7 +208,14 @@ public class Type
             FindAll();
         }
 
-        return systemTypeToType[type];
+        if (systemTypeToType.TryGetValue(type, out Type returnType))
+        {
+            return returnType;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     [SecuritySafeCritical]
