@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,15 +16,50 @@ public static class SpriteExtensions
     }
 
     /// <summary>
+    /// Converts this collection of sprites into an array of texture.
+    /// </summary>
+    public static Texture2D[] ToTextures(this ICollection<Sprite> sprites)
+    {
+        int count = sprites.Count;
+        int index = 0;
+        Texture2D[] textures = new Texture2D[count];
+        foreach (Sprite sprite in sprites)
+        {
+            textures[index] = ToTexture(sprite);
+            index++;
+        }
+
+        return textures;
+    }
+
+    /// <summary>
     /// Cuts the sprite into a texture using its main texture.
     /// </summary>
-    public static Texture2D ToTexture(this Sprite sprite) => sprite.ToTexture(sprite.texture);
+    public static Texture2D ToTexture(this Sprite sprite)
+    {
+        if (!sprite)
+        {
+            return null;
+        }
+
+        return sprite.ToTexture(sprite.texture);
+    }
 
     /// <summary>
     /// Cuts the texture into a smaller texture that represents the sprite.
     /// </summary>
     public static Texture2D ToTexture(this Sprite sprite, Texture2D textureToCut)
     {
+        if (!sprite)
+        {
+            throw new NullReferenceException("Sprite being given is null.");
+        }
+
+        if (!textureToCut)
+        {
+            throw new NullReferenceException("Texture being given is null.");
+        }
+
         //return existing ones
         if (spriteToTexture.TryGetValue(sprite, out Texture2D existingTexture))
         {
@@ -37,14 +73,29 @@ public static class SpriteExtensions
             return null;
         }
 
-        Texture2D croppedTexture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height, TextureFormat.ARGB32, false, true);
-        Color[] pixels = textureToCut.GetPixels((int)sprite.rect.x,
-                                                (int)sprite.rect.y,
-                                                (int)sprite.rect.width,
-                                                (int)sprite.rect.height);
+        float minX = 1f;
+        float maxX = 0f;
+        float minY = 1f;
+        float maxY = 0f;
+        foreach (Vector2 uv in sprite.uv)
+        {
+            minX = Mathf.Min(minX, uv.x);
+            maxX = Mathf.Max(maxX, uv.x);
+            minY = Mathf.Min(minY, uv.y);
+            maxY = Mathf.Max(maxY, uv.y);
+        }
+
+        int x = (int)sprite.rect.xMin;
+        int y = (int)sprite.rect.yMin;
+        int width = (int)sprite.rect.width;
+        int height = (int)sprite.rect.height;
+
+        Texture2D croppedTexture = new Texture2D(width, height, TextureFormat.ARGB32, false, true);
+        Color[] pixels = textureToCut.GetPixels(x, y, width, height);
         croppedTexture.SetPixels(pixels);
         croppedTexture.Apply();
         croppedTexture.filterMode = FilterMode.Point;
+        spriteToTexture[sprite] = croppedTexture;
         return croppedTexture;
     }
 

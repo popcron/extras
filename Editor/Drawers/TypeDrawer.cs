@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Popcron.Extras.Editor
 {
-    [CustomPropertyDrawer(typeof(global::Type))]
+    [CustomPropertyDrawer(typeof(PopType))]
     public class TypeDrawer : PropertyDrawer
     {
         private static GUIStyle customStyle;
@@ -11,14 +11,13 @@ namespace Popcron.Extras.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            Rect valuePosition = EditorGUI.PrefixLabel(position, label);
-            Rect checkmarkPosition = new Rect(valuePosition.xMax - 18, valuePosition.y, 18, valuePosition.height);
+            Rect checkmarkPosition = new Rect(position.xMax - 18, position.y, 18, position.height);
             SerializedProperty fullName = property.FindPropertyRelative("fullName");
-            string newName = EditorGUI.TextField(valuePosition, fullName.stringValue);
-            if (newName != fullName.stringValue || isValid is null)
+            string oldName = fullName.stringValue;
+            EditorGUI.PropertyField(position, fullName, label);
+            if (oldName != fullName.stringValue || isValid == null)
             {
-                isValid = Type.GetType(newName) != null;
-                fullName.stringValue = newName;
+                isValid = PopType.GetType(fullName.stringValue);
             }
 
             if (customStyle is null)
