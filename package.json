@@ -3,5 +3,13 @@
     "displayName": "Popcron Extras",
     "version": "1.0.1",
     "unity": "2018.3",
-    "description": "Some utility code and extras that I've amassed over the years that are handy to have."
+    "description": "Some utility code and extras that I've amassed over the years that are handy to have.",
+    "keywords": [
+      "utility",
+      "extra"
+    ],
+    "author": {
+      "name": "popcron",
+      "url": "https://github.com/popcron"
+    }
 }
