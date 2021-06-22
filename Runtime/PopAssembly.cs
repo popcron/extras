@@ -53,6 +53,7 @@ namespace Popcron.Extras
         }
 
         public string Location => location;
+        public string FullName => fullName;
 
         protected PopAssembly(Assembly assembly)
         {

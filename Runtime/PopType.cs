@@ -46,7 +46,6 @@ namespace Popcron.Extras
         private readonly string baseTypeFullName;
         private readonly string assemblyQualifiedName;
         private readonly string assemblyFullName;
-        private readonly Guid guid;
         private readonly bool isArray;
         private readonly bool isSerialzable;
         private readonly bool isEnum;
@@ -81,7 +80,6 @@ namespace Popcron.Extras
         public PopType BaseType => GetType(baseTypeFullName);
         public PopAssembly Assembly => PopAssembly.GetAssembly(assemblyFullName);
         public string AssemblyQualifiedName => assemblyQualifiedName;
-        public Guid GUID => guid;
         public bool IsArray => isArray;
         public bool IsSerialzable => isSerialzable;
         public bool IsSealed => isSealed;
@@ -111,7 +109,6 @@ namespace Popcron.Extras
             baseTypeFullName = type.BaseType?.FullName;
             assemblyFullName = type.Assembly.FullName;
             assemblyQualifiedName = type.AssemblyQualifiedName;
-            guid = type.GUID;
             isArray = type.IsArray;
             isSerialzable = type.IsSerializable;
             isSealed = type.IsSealed;
