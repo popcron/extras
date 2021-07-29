@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using dt = System.Double;
 #else
 using dt = System.Single;
+using UnityEngine.Experimental.Rendering;
 #endif
 
 #if UNITY_EDITOR
@@ -57,6 +58,30 @@ namespace Popcron.Extras
             }
         }
 
+        private static double UnityTime
+        {
+            get
+            {
+#if UNITY_2020_2_OR_NEWER
+                return Time.timeAsDouble;
+#else
+                return Time.time;
+#endif
+            }
+        }
+
+        private static double UnityFixedTime
+        {
+            get
+            {
+#if UNITY_2020_2_OR_NEWER
+                return Time.fixedTimeAsDouble;
+#else
+                return Time.fixedTime;
+#endif
+            }
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Bootstrap()
         {
@@ -82,7 +107,13 @@ namespace Popcron.Extras
         private static void Initialize()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
-            RenderPipelineManager.beginCameraRendering += OnRender;
+
+
+#if UNITY_2019_1_OR_NEWER
+            RenderPipelineManager.beginCameraRendering += (camera) => OnRender(camera);
+#else
+            Camera.onPreRender += OnRender;
+#endif
         }
 
         private static void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
@@ -90,7 +121,7 @@ namespace Popcron.Extras
 
         }
 
-        private static void OnRender(ScriptableRenderContext context, Camera camera)
+        private static void OnRender(Camera camera)
         {
             bool validCamera = false;
             if (camera == Camera.main)
@@ -102,7 +133,7 @@ namespace Popcron.Extras
             if (!validCamera)
             {
                 SceneView sceneView = SceneView.currentDrawingSceneView;
-                if (sceneView is not null)
+                if (sceneView != null)
                 {
                     validCamera = sceneView.camera == camera;
                 }
@@ -111,7 +142,7 @@ namespace Popcron.Extras
 
             if (validCamera)
             {
-                new BeginCameraRendering(context, camera).Dispatch();
+                new BeginCameraRendering(camera).Dispatch();
             }
         }
 
@@ -130,8 +161,8 @@ namespace Popcron.Extras
         private void Update()
         {
             runner = this;
-            dt delta = (dt)(Time.timeAsDouble - lastUpdateTime);
-            lastUpdateTime = (dt)Time.timeAsDouble;
+            dt delta = (dt)(UnityTime - lastUpdateTime);
+            lastUpdateTime = (dt)UnityTime;
 
             for (int i = 0; i < PopBehaviour.All.Count; i++)
             {
@@ -151,8 +182,8 @@ namespace Popcron.Extras
         private void FixedUpdate()
         {
             runner = this;
-            dt delta = (dt)(Time.fixedTimeAsDouble - lastFixedUpdateTime);
-            lastFixedUpdateTime = (dt)Time.fixedTimeAsDouble;
+            dt delta = (dt)(UnityFixedTime - lastFixedUpdateTime);
+            lastFixedUpdateTime = (dt)UnityFixedTime;
 
             for (int i = 0; i < PopBehaviour.All.Count; i++)
             {
@@ -171,8 +202,8 @@ namespace Popcron.Extras
         private void LateUpdate()
         {
             runner = this;
-            dt delta = (dt)(Time.timeAsDouble - lastLateUpdateTime);
-            lastLateUpdateTime = (dt)Time.timeAsDouble;
+            dt delta = (dt)(UnityTime - lastLateUpdateTime);
+            lastLateUpdateTime = (dt)UnityTime;
 
             for (int i = 0; i < PopBehaviour.All.Count; i++)
             {

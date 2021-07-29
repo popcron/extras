@@ -101,7 +101,7 @@ public static class PopEvents
                 ParameterInfo[] methodParameters = method.GetParameters();
                 if (methodParameters.Length == 1)
                 {
-                    if (method.GetCustomAttribute<PopEventListenerAttribute>() is not null)
+                    if (method.GetCustomAttribute<PopEventListenerAttribute>() != null)
                     {
                         Type parameterType = methodParameters[0].ParameterType;
                         if (parameterType.IsByRef)

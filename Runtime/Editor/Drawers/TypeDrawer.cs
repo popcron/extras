@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 
 namespace Popcron.Extras.Editor
@@ -30,3 +31,4 @@ namespace Popcron.Extras.Editor
         }
     }
 }
+#endif
