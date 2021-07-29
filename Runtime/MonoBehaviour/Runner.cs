@@ -110,7 +110,7 @@ namespace Popcron.Extras
 
 
 #if UNITY_2019_1_OR_NEWER
-            RenderPipelineManager.beginCameraRendering += (camera) => OnRender(camera);
+            RenderPipelineManager.beginCameraRendering += (context, camera) => OnRender(camera);
 #else
             Camera.onPreRender += OnRender;
 #endif
